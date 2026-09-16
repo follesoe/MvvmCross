@@ -267,6 +267,9 @@ public class MvxIosViewPresenter : MvxAttributeViewPresenter, IMvxIosViewPresent
         UIViewController viewController, MvxRootPresentationAttribute attribute,
         IMvxTabBarViewController tabBarController)
     {
+        if (tabBarController is MvxTabBarViewController mvxTabBarController)
+            mvxTabBarController.Presenter = new WeakReference<MvxIosViewPresenter>(this);
+
         TabBarViewController = tabBarController;
 
         // set root
@@ -757,6 +760,9 @@ public class MvxIosViewPresenter : MvxAttributeViewPresenter, IMvxIosViewPresent
         UINavigationController navigationController, UIViewController viewController, MvxChildPresentationAttribute attribute)
     {
         ValidateArguments(navigationController, attribute);
+
+        if (viewController is MvxTabBarViewController mvxTabBarController)
+            mvxTabBarController.Presenter = new WeakReference<MvxIosViewPresenter>(this);
 
         navigationController.PushViewController(viewController, attribute.Animated);
 
