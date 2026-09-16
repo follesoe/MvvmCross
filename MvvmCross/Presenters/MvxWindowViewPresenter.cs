@@ -116,7 +116,7 @@ public abstract class MvxWindowViewPresenter : MvxViewPresenter
             if (viewModel != null)
             {
                 _presenting.Remove(viewModel);
-                if (!shown && addedOwner)
+                if (!shown && addedOwner && registration.Presenter != null)
                     _owners.Remove(viewModel);
             }
         }

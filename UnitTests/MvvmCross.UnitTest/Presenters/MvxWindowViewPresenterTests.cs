@@ -175,8 +175,11 @@ public class MvxWindowViewPresenterTests
         Assert.True(await router.Show(Request("second", model)));
     }
 
-    [Fact]
-    public async Task DisconnectDuringPresentationDoesNotResurrectOwnership()
+    [Theory]
+    [InlineData(true, false)]
+    [InlineData(false, false)]
+    [InlineData(false, true)]
+    public async Task DisconnectDuringPresentationDoesNotResurrectOwnership(bool succeeds, bool throws)
     {
         var router = new Presenter();
         var first = CreatePresenter();
@@ -189,9 +192,15 @@ public class MvxWindowViewPresenterTests
         Assert.False(router.UnregisterWindow("scene"));
         var replacement = CreatePresenter();
         router.Register("scene", replacement);
-        pending.SetResult(true);
+        if (throws)
+            pending.SetException(new InvalidOperationException());
+        else
+            pending.SetResult(succeeds);
 
-        Assert.False(await showing);
+        if (throws)
+            await Assert.ThrowsAsync<InvalidOperationException>(() => showing);
+        else
+            Assert.False(await showing);
         Assert.False(await router.Close(request.ViewModelInstance!));
         Assert.False(await router.Show(request));
         Assert.True(await router.Show(Request("scene")));

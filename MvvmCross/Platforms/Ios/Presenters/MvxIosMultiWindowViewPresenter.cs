@@ -20,7 +20,9 @@ public class MvxIosMultiWindowViewPresenter : MvxWindowViewPresenter, IMvxIosVie
     public virtual void RegisterWindow(string windowId, UIWindow window)
     {
         ArgumentNullException.ThrowIfNull(window);
-        RegisterPresenter(windowId, CreatePresenter(window));
+        var presenter = CreatePresenter(window);
+        presenter.PopoverPresentationSourceProvider ??= new MvxPopoverPresentationSourceProvider();
+        RegisterPresenter(windowId, presenter);
     }
 
     /// <summary>Override to use a custom iOS presenter for each window.</summary>

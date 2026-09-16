@@ -40,7 +40,10 @@ public class MultiWindowSceneDelegate : MvxSceneDelegate
             var shown = await navigation.Navigate<WindowViewModel, WindowContext>(context,
                 new MvxWindowPresentationBundle(context.WindowId), token);
             if (shown && !token.IsCancellationRequested)
+            {
                 window.MakeKeyAndVisible();
+                return;
+            }
         }
         catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
@@ -50,15 +53,23 @@ public class MultiWindowSceneDelegate : MvxSceneDelegate
         {
             Console.WriteLine(exception);
         }
+
+        if (!token.IsCancellationRequested)
+            ReleaseWindow(session.PersistentIdentifier);
     }
 
     public override void DidDisconnect(UIScene scene)
     {
+        ReleaseWindow(scene.Session.PersistentIdentifier);
+        base.DidDisconnect(scene);
+    }
+
+    private void ReleaseWindow(string windowId)
+    {
         _connection?.Cancel();
         _connection?.Dispose();
         _connection = null;
-        _presenter?.UnregisterWindow(scene.Session.PersistentIdentifier);
+        _presenter?.UnregisterWindow(windowId);
         Window = null;
-        base.DidDisconnect(scene);
     }
 }

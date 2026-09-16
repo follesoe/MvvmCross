@@ -64,6 +64,15 @@ is pending. Close ownership is tracked for `MvxViewModelInstanceRequest`, as use
 For presentation hints, assign a `MvxWindowPresentationBundle` to the hint's `Body`.
 Close hints use ViewModel ownership.
 
+For popovers, set the anchor on the connected window's provider before navigating:
+
+```csharp
+var windowPresenter = presenter.GetWindowPresenter(windowId)!;
+windowPresenter.PopoverPresentationSourceProvider!.SourceView = button;
+```
+
+Each window has its own provider. Use `SourceBarButtonItem` for a navigation-bar button.
+
 ## Customization
 
 Register a subclass with `MvxIosHostBuilder.CreateBuilder().UsePresenter<MyMultiWindowPresenter>()`.
